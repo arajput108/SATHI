@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SĀTHI — Your AI Practice Partner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0F0D;
+    --panel:#111815;
+    --panel-2:#161F1A;
+    --panel-3:#1C271F;
+    --line:#25322A;
+    --line-soft:#1A241E;
+    --blue:#4FA8FF;
+    --amber:#F5B23D;
+    --coral:#FF6B5B;
+    --mint:#4FE3C1;
+    --text:#EDF1EE;
+    --text-dim:#8CA096;
+    --text-dim2:#5D6E65;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(1px 1px at 20px 20px, rgba(255,255,255,0.035) 1px, transparent 1.5px),
+      radial-gradient(1px 1px at 60px 60px, rgba(255,255,255,0.035) 1px, transparent 1.5px),
+      var(--ink);
+    background-size: 80px 80px, 80px 80px;
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .disp{font-family:'Space Grotesk',sans-serif;}
+  a{color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  section{padding:96px 0;}
+  @media (max-width:760px){ section{padding:64px 0;} }
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:none;}
+
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,15,13,0.82); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; padding-top:16px; padding-bottom:16px;}
+  .nav-brand{display:flex; align-items:center; gap:10px; font-family:'Space Grotesk',sans-serif; font-weight:700; letter-spacing:.5px; font-size:18px;}
+  .nav-brand .dotmark{width:9px; height:9px; border-radius:50%; background:var(--blue); box-shadow:0 0 10px var(--blue);}
+  .nav-links{display:flex; gap:28px; font-size:13px; color:var(--text-dim);}
+  .nav-links a{text-decoration:none; transition:color .2s;}
+  .nav-links a:hover{color:var(--text);}
+  .nav-cta{
+    font-family:'Inter',sans-serif; font-weight:700; font-size:12.5px;
+    background:var(--blue); color:#04121F; border:none; border-radius:8px;
+    padding:9px 16px; cursor:pointer; text-decoration:none;
+  }
+  @media (max-width:700px){ .nav-links{display:none;} }
+
+  .hero{padding-top:76px; padding-bottom:60px; position:relative; overflow:hidden;}
+  .hero-grid{display:grid; grid-template-columns:1.15fr 1fr; gap:48px; align-items:center;}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+  .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:11.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--blue);
+    border:1px solid #1F3348; background:#0E1A24; border-radius:999px; padding:6px 13px 6px 11px;
+    margin-bottom:22px;
+  }
+  .kicker .dot{width:6px; height:6px; border-radius:50%; background:var(--blue); box-shadow:0 0 8px var(--blue);}
+  h1.hero-title{
+    font-size:clamp(38px, 5.4vw, 62px); line-height:1.02; letter-spacing:-0.5px;
+    font-weight:700; margin-bottom:20px;
+  }
+  h1.hero-title .accent{color:var(--amber);}
+  .hero-sub{color:var(--text-dim); font-size:16.5px; line-height:1.65; max-width:520px; margin-bottom:32px;}
+  .hero-cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:36px;}
+  .btn{
+    font-family:'Inter',sans-serif; font-weight:700; font-size:14px;
+    border-radius:10px; padding:13px 22px; cursor:pointer; border:1px solid var(--line);
+    text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--blue); color:#04121F; border-color:var(--blue);}
+  .btn-ghost{background:transparent; color:var(--text); border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--text-dim);}
+
+  .hero-meta{display:flex; gap:28px; flex-wrap:wrap;}
+  .hero-meta div{display:flex; flex-direction:column; gap:2px;}
+  .hero-meta .n{font-family:'Space Grotesk',sans-serif; font-size:22px; color:var(--amber);}
+  .hero-meta .l{font-size:11px; color:var(--text-dim2); text-transform:uppercase; letter-spacing:1px;}
+
+  .hero-visual{
+    position:relative; aspect-ratio:1/1; border-radius:20px;
+    background:radial-gradient(circle at 50% 40%, #0E1A16 0%, #0A100D 70%);
+    border:1px solid var(--line); overflow:hidden;
+  }
+  #heroCanvas{width:100%; height:100%; display:block;}
+  .hero-visual .tag{
+    position:absolute; bottom:16px; left:16px; font-size:11px; color:var(--text-dim2);
+    font-family:'JetBrains Mono',monospace; letter-spacing:.5px;
+  }
+
+  .sec-head{max-width:640px; margin-bottom:52px;}
+  .sec-kicker{font-size:11.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--mint); margin-bottom:10px; font-weight:700;}
+  .sec-title{font-family:'Space Grotesk',sans-serif; font-size:clamp(26px,3.4vw,38px); font-weight:700; letter-spacing:-.3px; margin-bottom:14px;}
+  .sec-desc{color:var(--text-dim); font-size:15px; line-height:1.65;}
+
+  .pipeline{position:relative; padding-top:10px;}
+  .pipeline-track{position:relative; margin-bottom:8px;}
+  .pipeline-track svg{width:100%; height:36px; display:block;}
+  .pipeline-steps{display:grid; grid-template-columns:repeat(6,1fr); gap:14px;}
+  @media (max-width:900px){ .pipeline-steps{grid-template-columns:repeat(2,1fr);} .pipeline-track{display:none;} }
+  .pstep{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 16px; position:relative;}
+  .pstep .idx{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim2); margin-bottom:10px;}
+  .pstep .name{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; margin-bottom:6px;}
+  .pstep .desc{font-size:12.5px; color:var(--text-dim); line-height:1.5;}
+  .pstep .ic{width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; font-size:15px;}
+
+  .demo-shell{display:grid; grid-template-columns:1.5fr 1fr; gap:20px;}
+  @media (max-width:900px){ .demo-shell{grid-template-columns:1fr;} }
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px;}
+  .panel h3{font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;}
+  .panel h3 .tiny{font-size:10.5px; color:var(--text-dim2); font-family:'JetBrains Mono',monospace; font-weight:400; letter-spacing:.5px;}
+
+  .stage{position:relative; border-radius:12px; overflow:hidden; background:#08110D; aspect-ratio:4/3; border:1px solid var(--line-soft);}
+  .mirror{position:absolute; inset:0; transform:scaleX(-1);}
+  video, canvas{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+  #overlay{pointer-events:none;}
+
+  .status-pill{
+    position:absolute; top:12px; left:12px; z-index:5;
+    background:rgba(8,17,13,0.8); backdrop-filter:blur(4px);
+    border:1px solid var(--line); border-radius:999px;
+    padding:6px 12px; font-size:11.5px; font-weight:600;
+    display:flex; align-items:center; gap:7px; font-family:'JetBrains Mono',monospace;
+  }
+  .dotstat{width:7px; height:7px; border-radius:50%; background:var(--text-dim2);}
+  .dotstat.live{background:var(--mint); box-shadow:0 0 8px var(--mint);}
+  .dotstat.warn{background:var(--coral); box-shadow:0 0 8px var(--coral);}
+
+  .empty-stage{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:14px; text-align:center;
+    padding:24px; color:var(--text-dim); z-index:4;
+  }
+  .empty-stage p{max-width:320px; font-size:12.5px; line-height:1.55; margin:0;}
+  .empty-stage .ico{font-size:26px; opacity:.7;}
+
+  .controls{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  button{
+    font-family:'Inter',sans-serif; font-weight:700; font-size:13px;
+    border-radius:10px; border:1px solid var(--line); padding:11px 18px;
+    cursor:pointer; transition:transform .15s ease, background .15s ease;
+    background:var(--panel-3); color:var(--text);
+  }
+  button:hover{transform:translateY(-1px);}
+  button.primary{background:var(--mint); color:#04231A; border-color:var(--mint);}
+  button.ghost{background:transparent;}
+  button:disabled{opacity:.35; cursor:not-allowed; transform:none;}
+
+  .hint{color:var(--text-dim2); font-size:11.5px; margin-top:12px; line-height:1.55;}
+
+  .hud-row{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px;}
+  .hud-cell{background:var(--panel-2); border:1px solid var(--line-soft); border-radius:10px; padding:10px 12px;}
+  .hud-cell .l{font-size:9.5px; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim2); margin-bottom:4px;}
+  .hud-cell .v{font-family:'JetBrains Mono',monospace; font-size:19px; color:var(--blue);}
+  .hud-cell .v.amber{color:var(--amber);}
+
+  .side{display:flex; flex-direction:column; gap:18px;}
+  .dial-row{display:flex; align-items:center; gap:18px;}
+  .dial{position:relative; width:104px; height:104px; flex-shrink:0;}
+  .dial svg{transform:rotate(-90deg);}
+  .dial-num{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+  .dial-num .n{font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:700; line-height:1;}
+  .dial-num .l{font-size:9px; letter-spacing:1px; color:var(--text-dim2); text-transform:uppercase; margin-top:2px;}
+
+  .stat-list{flex:1; display:flex; flex-direction:column; gap:9px;}
+  .stat{display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px dashed var(--line-soft); padding-bottom:8px;}
+  .stat:last-child{border-bottom:none; padding-bottom:0;}
+  .stat .l{font-size:11.5px; color:var(--text-dim);}
+  .stat .v{font-family:'Space Grotesk',sans-serif; font-size:20px; color:var(--amber); font-weight:700;}
+
+  .sparkline{display:flex; align-items:flex-end; gap:4px; height:36px; margin-top:14px;}
+  .spark-bar{flex:1; background:var(--line-soft); border-radius:3px 3px 0 0; min-height:3px; transition:height .3s ease, background .3s ease;}
+
+  .feed{display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto;}
+  .msg{border-radius:10px; padding:10px 12px; font-size:12px; line-height:1.45; border-left:3px solid var(--line); background:var(--panel-2);}
+  .msg.good{border-color:var(--mint);}
+  .msg.warn{border-color:var(--coral);}
+  .msg .t{font-size:9.5px; color:var(--text-dim2); display:block; margin-bottom:2px; letter-spacing:.5px; font-family:'JetBrains Mono',monospace;}
+
+  .arch-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  @media (max-width:900px){ .arch-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .arch-grid{grid-template-columns:1fr;} }
+  .arch-card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px;}
+  .arch-card .tag{
+    font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1px;
+    color:var(--blue); margin-bottom:12px; display:inline-block; border:1px solid #1F3348; background:#0E1A24;
+    padding:4px 9px; border-radius:6px;
+  }
+  .arch-card ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .arch-card li{font-size:12.5px; color:var(--text-dim); line-height:1.5; padding-left:14px; position:relative;}
+  .arch-card li::before{content:'—'; position:absolute; left:0; color:var(--text-dim2);}
+
+  .impact-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media (max-width:760px){ .impact-grid{grid-template-columns:1fr;} }
+  .impact-card{background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%); border:1px solid var(--line); border-radius:16px; padding:26px;}
+  .impact-card .n{font-family:'Space Grotesk',sans-serif; font-size:38px; font-weight:700; color:var(--amber); margin-bottom:8px;}
+  .impact-card .l{font-size:13px; color:var(--text); font-weight:600; margin-bottom:6px;}
+  .impact-card .d{font-size:12.5px; color:var(--text-dim); line-height:1.55;}
+
+  footer{border-top:1px solid var(--line-soft); padding:40px 0;}
+  .foot-row{display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; align-items:center;}
+  .foot-brand{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px;}
+  .foot-meta{font-size:12px; color:var(--text-dim2); line-height:1.6; max-width:560px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-brand"><span class="dotmark"></span>SĀTHI</div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#demo">Live demo</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#impact">Impact</a>
+    </div>
+    <a href="#demo" class="nav-cta">Run the demo</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker"><span class="dot"></span>SIH 2026 · Team YUKTI · Smart Automation</div>
+      <h1 class="hero-title">Your practice partner<br>that <span class="accent">watches you move</span>.</h1>
+      <p class="hero-sub">SĀTHI is a multimodal AI coach. Tell it a goal, it builds a plan — then it watches you through your phone's camera and mic as you practice, scores your form in real time, and adapts the next lesson to what it just saw.</p>
+      <div class="hero-cta-row">
+        <a href="#demo" class="btn btn-primary">▶ Try the real-time demo</a>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
+      </div>
+      <div class="hero-meta">
+        <div><span class="n mono">0</span><span class="l">Extra hardware</span></div>
+        <div><span class="n mono">1</span><span class="l">Device — phone camera</span></div>
+        <div><span class="n mono">5+</span><span class="l">Domains: study, dance, fitness</span></div>
+        <div><span class="n mono">0–100</span><span class="l">Live form score</span></div>
+      </div>
+    </div>
+    <div class="hero-visual reveal">
+      <canvas id="heroCanvas"></canvas>
+      <div class="tag mono">// live joint tracking, illustrative</div>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">How SĀTHI works</div>
+      <h2 class="sec-title">One continuous loop, from goal to correction.</h2>
+      <p class="sec-desc">SĀTHI doesn't just play a tutorial video. It sets a plan, watches the attempt, measures it against biomechanically sound targets, and adjusts the next step — the same loop a human coach runs, automated.</p>
+    </div>
+
+    <div class="pipeline reveal">
+      <div class="pipeline-track">
+        <svg viewBox="0 0 1200 36" preserveAspectRatio="none">
+          <line x1="60" y1="18" x2="1140" y2="18" stroke="#25322A" stroke-width="2"/>
+          <line id="flowLine" x1="60" y1="18" x2="1140" y2="18" stroke="#4FA8FF" stroke-width="2" stroke-dasharray="10 10"/>
+        </svg>
+      </div>
+      <div class="pipeline-steps">
+        <div class="pstep"><div class="ic" style="background:#0E1A24; color:var(--blue);">◎</div><div class="idx">01</div><div class="name">Set the goal</div><div class="desc">User states what to learn — a squat routine, a dance step, a chapter to revise.</div></div>
+        <div class="pstep"><div class="ic" style="background:#0E1A24; color:var(--blue);">▤</div><div class="idx">02</div><div class="name">Build the plan</div><div class="desc">SĀTHI drafts a personalized session — targets, reps, sequence and pacing.</div></div>
+        <div class="pstep"><div class="ic" style="background:#152018; color:var(--mint);">◉</div><div class="idx">03</div><div class="name">Watch (camera + mic)</div><div class="desc">Live pose, joint and gesture tracking on-device via MediaPipe, no upload needed.</div></div>
+        <div class="pstep"><div class="ic" style="background:#152018; color:var(--mint);">∠</div><div class="idx">04</div><div class="name">Analyze motion</div><div class="desc">Posture, joint angles, trajectory, timing and reps measured against the target form.</div></div>
+        <div class="pstep"><div class="ic" style="background:#241C10; color:var(--amber);">%</div><div class="idx">05</div><div class="name">Score & correct</div><div class="desc">0–100 score plus a specific spoken cue — "straighten your back", not just "wrong".</div></div>
+        <div class="pstep"><div class="ic" style="background:#241C10; color:var(--amber);">↻</div><div class="idx">06</div><div class="name">Adapt next lesson</div><div class="desc">Progress is logged and the next session is retuned to what was actually weak.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">Step 03–05, running for real</div>
+      <h2 class="sec-title">Live demo — squat coaching module</h2>
+      <p class="sec-desc">This is the actual analysis pipeline, scoped to one exercise so you can see it work end to end. Pose landmarks are computed on-device in your browser; nothing is uploaded. The full product runs this same loop for dance steps, exam-answer handwriting checks and hobby drills.</p>
+    </div>
+
+    <div class="demo-shell reveal">
+      <div class="panel">
+        <h3>Practice stage <span class="tiny">MODULE: SQUAT · v0.1</span></h3>
+        <div class="stage" id="stage">
+          <div class="mirror">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="overlay"></canvas>
+          </div>
+          <div class="status-pill"><span class="dotstat" id="statusDot"></span><span id="statusText">Not started</span></div>
+          <div class="empty-stage" id="emptyState">
+            <div class="ico">◉</div>
+            <p>SĀTHI needs to see you move to analyze form. Start your camera, or run the no-camera demo to watch the scoring engine work on simulated motion.</p>
+          </div>
+        </div>
+
+        <div class="hud-row">
+          <div class="hud-cell"><div class="l">Knee angle</div><div class="v" id="hudKnee">—</div></div>
+          <div class="hud-cell"><div class="l">Back angle</div><div class="v" id="hudBack">—</div></div>
+          <div class="hud-cell"><div class="l">Tempo</div><div class="v amber" id="hudTempo">—</div></div>
+          <div class="hud-cell"><div class="l">Phase</div><div class="v amber" id="hudPhase">idle</div></div>
+        </div>
+
+        <div class="controls">
+          <button class="primary" id="startCamBtn">Start camera &amp; track me</button>
+          <button class="ghost" id="demoBtn">Run no-camera demo</button>
+          <button class="ghost" id="resetBtn">Reset session</button>
+        </div>
+        <p class="hint">Simplified for the prototype: one exercise instead of the full skill library, on-device pose landmarks instead of the full multimodal reasoning layer, local scoring instead of the PostgreSQL history + adaptive planner described in the architecture below.</p>
+      </div>
+
+      <div class="side">
+        <div class="panel">
+          <h3>Session score</h3>
+          <div class="dial-row">
+            <div class="dial">
+              <svg width="104" height="104" viewBox="0 0 104 104">
+                <circle cx="52" cy="52" r="44" fill="none" stroke="#1C271F" stroke-width="9"/>
+                <circle id="dialProgress" cx="52" cy="52" r="44" fill="none" stroke="#F5B23D" stroke-width="9"
+                  stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5"/>
+              </svg>
+              <div class="dial-num"><span class="n" id="scoreNum">0</span><span class="l">/ 100</span></div>
+            </div>
+            <div class="stat-list">
+              <div class="stat"><span class="l">Reps completed</span><span class="v" id="repCount">0</span></div>
+              <div class="stat"><span class="l">Full-depth reps</span><span class="v" id="goodCount">0</span></div>
+              <div class="stat"><span class="l">Session time</span><span class="v" id="timeCount">0:00</span></div>
+            </div>
+          </div>
+          <div class="sparkline" id="sparkline"></div>
+        </div>
+
+        <div class="panel">
+          <h3>Coach commentary <span class="tiny">LIVE</span></h3>
+          <div class="feed" id="feed">
+            <div class="msg"><span class="t">SĀTHI</span>Waiting for you to start a session…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">Under the hood</div>
+      <h2 class="sec-title">Technical approach</h2>
+      <p class="sec-desc">The demo above runs a slice of this stack directly in your browser. The full system adds voice interaction, persistent progress tracking and cloud-scale plan generation.</p>
+    </div>
+    <div class="arch-grid reveal">
+      <div class="arch-card">
+        <span class="tag">App &amp; backend</span>
+        <ul>
+          <li>Flutter (Dart) client</li>
+          <li>FastAPI (Python) backend</li>
+          <li>PostgreSQL for persistent data</li>
+          <li>Redis for live session state</li>
+        </ul>
+      </div>
+      <div class="arch-card">
+        <span class="tag">AI / ML</span>
+        <ul>
+          <li>OpenCV + MediaPipe pose &amp; gesture recognition</li>
+          <li>TensorFlow Lite for on-device inference</li>
+          <li>Multimodal LLM/API for reasoning &amp; feedback</li>
+        </ul>
+      </div>
+      <div class="arch-card">
+        <span class="tag">Real-time &amp; voice</span>
+        <ul>
+          <li>WebRTC / WebSocket streaming</li>
+          <li>Speech-to-text for spoken input</li>
+          <li>Text-to-speech for spoken coaching</li>
+        </ul>
+      </div>
+      <div class="arch-card">
+        <span class="tag">Infra</span>
+        <ul>
+          <li>Docker + CI/CD deployment</li>
+          <li>Cloud with optional edge AI</li>
+          <li>Low-latency, privacy-friendly inference</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="impact">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker">Why it matters</div>
+      <h2 class="sec-title">Coaching, without the cost of a coach.</h2>
+    </div>
+    <div class="impact-grid reveal">
+      <div class="impact-card">
+        <div class="n">1 : 1</div>
+        <div class="l">Personalized, not generic</div>
+        <div class="d">Every session is scored against the user's own last attempt, not a one-size-fits-all video tutorial.</div>
+      </div>
+      <div class="impact-card">
+        <div class="n">Any phone</div>
+        <div class="l">No specialized hardware</div>
+        <div class="d">Just a smartphone camera and mic — mature open-source pose models remove the need for motion-capture rigs.</div>
+      </div>
+      <div class="impact-card">
+        <div class="n">5 domains</div>
+        <div class="l">One platform, many skills</div>
+        <div class="d">Academics, fitness, dance, cultural skills and hobbies all reuse the same watch → score → adapt loop.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <div class="foot-brand">SĀTHI</div>
+    <div class="foot-meta">Team YUKTI — Aakansha Yadav (Lead), Aryan Raj, Ankit Singh, Aastha Chaudhary, Ayush Sharma. Smart India Hackathon 2026 · Smart Automation · Software. References: MediaPipe Pose Landmarker &amp; Gesture Recognizer docs, BlazePose (Bazarevsky et al.), OpenPose (Cao et al.), Flutter / FastAPI / PostgreSQL / Gemini API docs.</div>
+  </div>
+</footer>
+
+<script type="module">
+import { PoseLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+}, {threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+(function heroAnim(){
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let w,h;
+  function resize(){
+    w = canvas.clientWidth; h = canvas.clientHeight;
+    canvas.width = w * devicePixelRatio; canvas.height = h * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  resize(); window.addEventListener('resize', resize);
+
+  const base = [
+    {x:0.5,y:0.16},{x:0.5,y:0.30},
+    {x:0.38,y:0.34},{x:0.62,y:0.34},
+    {x:0.30,y:0.48},{x:0.70,y:0.48},
+    {x:0.24,y:0.62},{x:0.76,y:0.62},
+    {x:0.5,y:0.52},
+    {x:0.42,y:0.55},{x:0.58,y:0.55},
+    {x:0.40,y:0.74},{x:0.60,y:0.74},
+    {x:0.38,y:0.92},{x:0.62,y:0.92},
+  ];
+  const edges = [[0,1],[1,2],[1,3],[2,4],[4,6],[3,5],[5,7],[1,8],[8,9],[8,10],[9,11],[11,13],[10,12],[12,14]];
+  const nodes = base.map(p=>({...p, phase:Math.random()*Math.PI*2}));
+
+  function frame(t){
+    ctx.clearRect(0,0,w,h);
+    const pts = nodes.map(n=>{
+      const dx = Math.sin(t/1800 + n.phase)*0.012;
+      const dy = Math.cos(t/2200 + n.phase)*0.012;
+      return {x:(n.x+dx)*w, y:(n.y+dy)*h};
+    });
+    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = 'rgba(79,168,255,0.45)';
+    edges.forEach(([a,b])=>{
+      ctx.beginPath(); ctx.moveTo(pts[a].x,pts[a].y); ctx.lineTo(pts[b].x,pts[b].y); ctx.stroke();
+    });
+    pts.forEach((p,i)=>{
+      ctx.beginPath();
+      ctx.fillStyle = i===0 ? 'rgba(245,178,61,0.85)' : 'rgba(79,227,193,0.85)';
+      ctx.arc(p.x,p.y, i===0?5:3.4, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+(function flowAnim(){
+  const line = document.getElementById('flowLine');
+  let offset = 0;
+  function tick(){
+    offset -= 0.6;
+    line.setAttribute('stroke-dashoffset', offset);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+const video = document.getElementById('video');
+const overlay = document.getElementById('overlay');
+const ctx = overlay.getContext('2d');
+const stage = document.getElementById('stage');
+const emptyState = document.getElementById('emptyState');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const startCamBtn = document.getElementById('startCamBtn');
+const demoBtn = document.getElementById('demoBtn');
+const resetBtn = document.getElementById('resetBtn');
+const feed = document.getElementById('feed');
+const scoreNum = document.getElementById('scoreNum');
+const dialProgress = document.getElementById('dialProgress');
+const repCountEl = document.getElementById('repCount');
+const goodCountEl = document.getElementById('goodCount');
+const timeCountEl = document.getElementById('timeCount');
+const hudKnee = document.getElementById('hudKnee');
+const hudBack = document.getElementById('hudBack');
+const hudTempo = document.getElementById('hudTempo');
+const hudPhase = document.getElementById('hudPhase');
+const sparkline = document.getElementById('sparkline');
+
+const CIRC = 276.5;
+let poseLandmarker = null;
+let mode = null;
+let running = false;
+let animHandle = null;
+let sessionStart = null;
+let timerHandle = null;
+
+let squatState = 'up';
+let minKneeAngle = 180;
+let minBackAngle = 180;
+let repCount = 0, goodCount = 0;
+let scores = [];
+let repTimestamps = [];
+
+const CONNECTIONS = [
+  [11,12],[11,23],[12,24],[23,24],
+  [11,13],[13,15],[12,14],[14,16],
+  [23,25],[25,27],[24,26],[26,28],
+  [27,31],[28,32]
+];
+
+function setStatus(text, state){
+  statusText.textContent = text;
+  statusDot.className = 'dotstat' + (state ? ' ' + state : '');
+}
+function setPhase(p){ hudPhase.textContent = p; }
+
+function addMsg(text, kind){
+  const el = document.createElement('div');
+  el.className = 'msg' + (kind ? ' ' + kind : '');
+  const time = new Date().toLocaleTimeString([], {minute:'2-digit', second:'2-digit'});
+  el.innerHTML = `<span class="t">SĀTHI · ${time}</span>${text}`;
+  feed.prepend(el);
+  while(feed.children.length > 8) feed.removeChild(feed.lastChild);
+}
+
+function updateSparkline(){
+  sparkline.innerHTML = '';
+  const last = scores.slice(-10);
+  last.forEach(s=>{
+    const bar = document.createElement('div');
+    bar.className = 'spark-bar';
+    bar.style.height = Math.max(6, s*0.34) + 'px';
+    bar.style.background = s>=80 ? 'var(--mint)' : s>=50 ? 'var(--amber)' : 'var(--coral)';
+    sparkline.appendChild(bar);
+  });
+}
+
+function updateScoreUI(){
+  const overall = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
+  scoreNum.textContent = overall;
+  dialProgress.setAttribute('stroke-dashoffset', CIRC - (CIRC * overall/100));
+  dialProgress.setAttribute('stroke', overall>=80? '#4FE3C1' : overall>=50 ? '#F5B23D' : '#FF6B5B');
+  repCountEl.textContent = repCount;
+  goodCountEl.textContent = goodCount;
+  updateSparkline();
+
+  if(repTimestamps.length >= 2){
+    const recent = repTimestamps.slice(-4);
+    const spanMin = (recent[recent.length-1] - recent[0]) / 60000;
+    const tempo = spanMin > 0 ? Math.round((recent.length-1)/spanMin) : 0;
+    hudTempo.textContent = tempo + ' rpm';
+  }
+}
+
+function startTimer(){
+  sessionStart = Date.now();
+  timerHandle = setInterval(()=>{
+    const s = Math.floor((Date.now()-sessionStart)/1000);
+    const m = Math.floor(s/60);
+    const ss = String(s%60).padStart(2,'0');
+    timeCountEl.textContent = `${m}:${ss}`;
+  }, 500);
+}
+
+function angleBetween(a,b,c){
+  const ab = {x:a.x-b.x, y:a.y-b.y};
+  const cb = {x:c.x-b.x, y:c.y-b.y};
+  const dot = ab.x*cb.x + ab.y*cb.y;
+  const magAB = Math.hypot(ab.x,ab.y) || 1e-6;
+  const magCB = Math.hypot(cb.x,cb.y) || 1e-6;
+  let cos = dot/(magAB*magCB);
+  cos = Math.min(1, Math.max(-1, cos));
+  return Math.acos(cos) * 180/Math.PI;
+}
+
+function evaluateRep(kneeMin, backMin){
+  let repScore = 100;
+  const notes = [];
+  if(kneeMin > 115){ repScore -= 35; notes.push('go a little lower for full depth'); }
+  else notes.push('great depth');
+  if(backMin < 140){ repScore -= 20; notes.push('keep your chest up, back a bit straighter'); }
+  repScore = Math.max(0, repScore);
+  scores.push(repScore);
+  repTimestamps.push(Date.now());
+  if(repScore >= 80) goodCount++;
+  addMsg(`Rep ${repCount}: ${notes.join(' · ')}. Score ${repScore}/100.`, repScore>=80?'good':'warn');
+  updateScoreUI();
+}
+
+function processKneeBack(kneeAngle, backAngle){
+  hudKnee.textContent = Math.round(kneeAngle) + '°';
+  hudBack.textContent = Math.round(backAngle) + '°';
+  minKneeAngle = Math.min(minKneeAngle, kneeAngle);
+  minBackAngle = Math.min(minBackAngle, backAngle);
+
+  if(squatState === 'up' && kneeAngle < 120){
+    squatState = 'down'; setPhase('descending');
+  }
+  if(squatState === 'down' && kneeAngle > 160){
+    squatState = 'up'; setPhase('standing');
+    repCount++;
+    evaluateRep(minKneeAngle, minBackAngle);
+    minKneeAngle = 180; minBackAngle = 180;
+  } else if(squatState === 'down'){
+    setPhase('holding depth');
+  }
+}
+
+async function loadModel(){
+  setStatus('Loading pose model…');
+  const vision = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+  );
+  poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+      delegate: "GPU"
+    },
+    runningMode: "VIDEO",
+    numPoses: 1
+  });
+}
+
+async function startCamera(){
+  startCamBtn.disabled = true; demoBtn.disabled = true;
+  try{
+    if(!poseLandmarker) await loadModel();
+    setStatus('Requesting camera…');
+    const stream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480}, audio:false});
+    video.srcObject = stream;
+    await video.play();
+    overlay.width = stage.clientWidth; overlay.height = stage.clientHeight;
+    emptyState.style.display = 'none';
+    mode = 'live'; running = true;
+    setStatus('Tracking you live', 'live'); setPhase('calibrating');
+    addMsg('Camera on — step back so your full body is visible, then start squatting.');
+    startTimer(); liveLoop();
+  } catch(err){
+    setStatus('Camera unavailable', 'warn');
+    addMsg('Could not access the camera in this environment (' + err.message + '). Try "Run no-camera demo" to see the scoring engine instead.', 'warn');
+    startCamBtn.disabled = false; demoBtn.disabled = false;
+  }
+}
+
+let hudKneeVal = 0;
+
+function drawSkeleton(landmarks){
+  ctx.clearRect(0,0,overlay.width, overlay.height);
+  const w = overlay.width, h = overlay.height;
+  ctx.lineWidth = 3; ctx.strokeStyle = '#4FE3C1';
+  CONNECTIONS.forEach(([a,b])=>{
+    const p1=landmarks[a], p2=landmarks[b]; if(!p1||!p2) return;
+    ctx.beginPath(); ctx.moveTo(p1.x*w,p1.y*h); ctx.lineTo(p2.x*w,p2.y*h); ctx.stroke();
+  });
+  ctx.fillStyle = '#F5B23D';
+  landmarks.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x*w,p.y*h,4,0,Math.PI*2); ctx.fill(); });
+
+  const knee = landmarks[25] && landmarks[27] ? landmarks[25] : landmarks[26];
+  if(knee){
+    const kx = knee.x*w, ky = knee.y*h;
+    ctx.save();
+    ctx.scale(-1,1);
+    ctx.font = '600 13px JetBrains Mono, monospace';
+    ctx.fillStyle = 'rgba(8,17,13,0.85)';
+    ctx.fillRect(-kx-58, ky-28, 60, 20);
+    ctx.fillStyle = '#4FA8FF';
+    ctx.fillText(Math.round(hudKneeVal)+'°', -kx-52, ky-13);
+    ctx.restore();
+  }
+}
+
+let lastPoseSeen = 0;
+function liveLoop(){
+  if(!running || mode !== 'live') return;
+  if(video.readyState >= 2){
+    const results = poseLandmarker.detectForVideo(video, performance.now());
+    if(results.landmarks && results.landmarks.length){
+      lastPoseSeen = Date.now();
+      const lm = results.landmarks[0];
+
+      const leftVis = (lm[25]?.visibility||0) + (lm[27]?.visibility||0);
+      const rightVis = (lm[26]?.visibility||0) + (lm[28]?.visibility||0);
+      const useLeft = leftVis >= rightVis;
+      const hip = useLeft ? lm[23] : lm[24];
+      const knee = useLeft ? lm[25] : lm[26];
+      const ankle = useLeft ? lm[27] : lm[28];
+      const shoulder = useLeft ? lm[11] : lm[12];
+
+      if(hip && knee && ankle && shoulder){
+        const kneeAngle = angleBetween(hip, knee, ankle);
+        const backAngle = angleBetween(shoulder, hip, knee);
+        hudKneeVal = kneeAngle;
+        drawSkeleton(lm);
+        processKneeBack(kneeAngle, backAngle);
+      } else {
+        drawSkeleton(lm);
+      }
+    } else {
+      ctx.clearRect(0,0,overlay.width, overlay.height);
+      if(Date.now() - lastPoseSeen > 1500) setStatus('No pose detected — step into frame', 'warn');
+    }
+  }
+  animHandle = requestAnimationFrame(liveLoop);
+}
+
+function runDemo(){
+  startCamBtn.disabled = true; demoBtn.disabled = true;
+  emptyState.style.display = 'none';
+  overlay.width = stage.clientWidth; overlay.height = stage.clientHeight;
+  mode = 'demo'; running = true;
+  setStatus('Running simulated squat data', 'live'); setPhase('simulating');
+  addMsg('No-camera demo started — simulating a person doing squats to show scoring + feedback live.');
+  startTimer(); demoTick(0);
+}
+
+function demoTick(t){
+  if(!running || mode !== 'demo') return;
+  const cycle = 2.6;
+  const phase = (t % cycle) / cycle;
+  const depthVariance = Math.sin(t/9) * 15;
+  const kneeAngle = 160 - (Math.sin(phase*Math.PI*2 - Math.PI/2)+1)/2 * (70 - depthVariance);
+  const backAngle = 165 - Math.max(0, (Math.sin(phase*Math.PI*2)+1)) * (t%7<2 ? 30 : 5);
+  hudKneeVal = kneeAngle;
+  drawStickFigure(kneeAngle);
+  processKneeBack(kneeAngle, backAngle);
+  animHandle = requestAnimationFrame(()=> demoTick(t + 1/30));
+}
+
+function drawStickFigure(kneeAngle){
+  ctx.clearRect(0,0,overlay.width, overlay.height);
+  const w = overlay.width, h = overlay.height;
+  const squatDepth = (180 - kneeAngle) / 180;
+  const hipY = h*0.42 + squatDepth*h*0.22;
+  const kneeY = h*0.68, ankleY = h*0.9, cx = w*0.5;
+
+  ctx.strokeStyle = '#4FE3C1'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.fillStyle = '#F5B23D';
+  ctx.arc(cx, hipY - h*0.22, 14, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx, hipY - h*0.20); ctx.lineTo(cx, hipY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, hipY - h*0.13); ctx.lineTo(cx - w*0.12, hipY - h*0.05); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, hipY - h*0.13); ctx.lineTo(cx + w*0.12, hipY - h*0.05); ctx.stroke();
+  const kneeX = cx - w*0.06 * squatDepth*2;
+  ctx.beginPath(); ctx.moveTo(cx, hipY); ctx.lineTo(kneeX, kneeY); ctx.lineTo(cx, ankleY); ctx.stroke();
+  const kneeX2 = cx + w*0.06 * squatDepth*2;
+  ctx.beginPath(); ctx.moveTo(cx, hipY); ctx.lineTo(kneeX2, kneeY); ctx.lineTo(cx, ankleY); ctx.stroke();
+
+  ctx.save(); ctx.scale(-1,1);
+  ctx.font = '600 13px JetBrains Mono, monospace';
+  ctx.fillStyle = 'rgba(8,17,13,0.85)';
+  ctx.fillRect(-kneeX2-58, kneeY-28, 60, 20);
+  ctx.fillStyle = '#4FA8FF';
+  ctx.fillText(Math.round(kneeAngle)+'°', -kneeX2-52, kneeY-13);
+  ctx.restore();
+}
+
+startCamBtn.addEventListener('click', startCamera);
+demoBtn.addEventListener('click', runDemo);
+resetBtn.addEventListener('click', ()=>{
+  running = false; mode = null;
+  if(animHandle) cancelAnimationFrame(animHandle);
+  if(timerHandle) clearInterval(timerHandle);
+  if(video.srcObject){ video.srcObject.getTracks().forEach(t=>t.stop()); video.srcObject=null; }
+  ctx.clearRect(0,0,overlay.width, overlay.height);
+  emptyState.style.display = 'flex';
+  setStatus('Not started'); setPhase('idle');
+  repCount = 0; goodCount = 0; scores = []; repTimestamps = [];
+  squatState = 'up'; minKneeAngle = 180; minBackAngle = 180;
+  timeCountEl.textContent = '0:00';
+  hudKnee.textContent = '—'; hudBack.textContent = '—'; hudTempo.textContent = '—';
+  updateScoreUI();
+  feed.innerHTML = '<div class="msg"><span class="t">SĀTHI</span>Session reset. Start again whenever you\'re ready.</div>';
+  startCamBtn.disabled = false; demoBtn.disabled = false;
+});
+
+window.addEventListener('resize', ()=>{
+  if(mode){ overlay.width = stage.clientWidth; overlay.height = stage.clientHeight; }
+});
+
+updateScoreUI();
+</script>
+</body>
+</html>
