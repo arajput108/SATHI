@@ -100,4 +100,4 @@ The complete SĀTHI architecture is designed around:
 
 ```text
 SATHI/
-└── MVP.html
+└── index.html
